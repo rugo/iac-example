@@ -8,6 +8,7 @@
     name:
     - language-pack-en
     - nginx
+    - unzip
     - docker.io
     - docker-compose
     update_cache: yes
