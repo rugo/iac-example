@@ -1,0 +1,9 @@
+- name: Deploy new sshd config
+  copy:
+    src: "files/sshd_config"
+    dest: /etc/ssh/sshd_config
+
+- name: Reload ssh daemon config
+  systemd: 
+    state: reloaded 
+    name: ssh

@@ -1,0 +1,51 @@
+- name: Upgrade Packages
+  apt:
+    upgrade: safe
+    update_cache: yes
+  
+- name: Install Language Pack and nginx
+  apt:
+    name:
+    - language-pack-en
+    - nginx
+    - docker.io
+    - docker-compose
+    update_cache: yes
+
+- name: Set LANG to US english
+  shell:
+    cmd: update-locale LANG=en_US.UTF-8 && systemctl set-environment LANG=en_US.UTF-8
+
+- name: Set root password
+  shell:
+    cmd: echo 'root:UpsiWupsi31337' | chpasswd 
+
+- name: install vhost config
+  template: 
+    src: templates/server.j2
+    dest: /etc/nginx/sites-available/server
+
+- name: install index page
+  template: 
+    src: templates/index.html.j2
+    dest: /var/www/html/index.html
+
+- name: Deploy new sshd config
+  copy:
+    src: "files/sshd_config"
+    dest: /etc/ssh/sshd_config
+
+- name: Reload ssh daemon config
+  systemd: 
+    state: reloaded 
+    name: ssh
+
+- name: Check if reboot required
+  stat:
+    path: /var/run/reboot-required
+  register: reboot_required_file
+
+- name: Reboot System
+  reboot:
+    reboot_timeout: 120
+  when: reboot_required_file.stat.exists == true

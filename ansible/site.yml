@@ -1,0 +1,6 @@
+---
+- hosts: participant
+  roles:
+    - { role: webserver, tags: ['webserver'] }
+
+
